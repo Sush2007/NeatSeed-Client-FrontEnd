@@ -1,16 +1,50 @@
-# React + Vite
+# 💚 NeatSeed – Login & Signup Module
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+### ♻️ Smart Waste Management Made Simple
 
-Currently, two official plugins are available:
+NeatSeed is a smart waste management system that connects **Users (households)**, **Drivers (garbage collectors)**, and **Admins** through one unified digital platform.  
+This repository focuses on the **Integrated Login and Signup System** for **Users** and **Drivers**, built to make authentication smooth, secure, and accessible across all devices.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+---
 
-## React Compiler
+## 🌱 Project Overview
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+In many areas, garbage collection becomes irregular due to miscommunication and untracked pickups. NeatSeed aims to solve this by bringing everyone on a single app — allowing real-time tracking of garbage collection and proper coordination between households and garbage trucks.
 
-## Expanding the ESLint configuration
+This module forms the **foundation of the NeatSeed ecosystem**, enabling:
+- Secure account creation for both **Users** and **Drivers**
+- Easy login through a unified interface
+- Smooth navigation into their respective dashboards
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+---
+
+## 🧩 Features
+
+✅ **Common Login & Signup Page** – One page for both Users and Drivers with role-based redirection  
+✅ **Responsive UI** – Designed for both mobile (React Native) and web users  
+✅ **Validation & Error Handling** – Ensures clean input and clear feedback  
+✅ **Role Selection System** – Easily switch between User and Driver roles  
+✅ **Modern UI Design** – Minimal, eco-themed interface with clear visuals  
+✅ **Integration Ready** – Connects seamlessly with backend APIs for authentication  
+
+---
+
+## 🛠️ Tech Stack
+
+**Frontend:**  
+- React Native (for mobile)  
+- React + Tailwind CSS (for responsive web version)  
+
+**Backend (to be integrated):**  
+- Node.js + Express for API handling  
+- MongoDB for storing user and driver credentials  
+
+**Libraries & Tools:**  
+- Axios for API requests  
+- React Router / Navigation  
+- Material Icons or Lucide React for UI icons  
+
+---
+
+## 🧭 Folder Structure (Example)
+
