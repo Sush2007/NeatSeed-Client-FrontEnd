@@ -1,6 +1,11 @@
 import React, { useState } from 'react';
 import { User, Mail, Phone, MapPin, Lock, Leaf } from 'lucide-react';
+import { Leaf } from "react-icons/lf";
+import { User } from "react-icons/us";
+import { Mail } from "react-icons/ma";
+import { Lock } from "react-icons/lo";
 import { Link } from 'react-router-dom';
+import { getApiUrl } from '../config/api';
 
 export default function SignUp() {
   const [formData, setFormData] = useState({
@@ -12,7 +17,7 @@ export default function SignUp() {
     password: ''
   });
 
-  const handleChange = (e) => {
+  const handleChange = async (e) => {
     setFormData({
       ...formData,
       [e.target.name]: e.target.value
