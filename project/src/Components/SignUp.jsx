@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { User, Mail, Phone, MapPin, Lock, Leaf } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import  { getApiUrl } from '../config/api';
+import { getApiUrl } from '../config/api';
 
 export default function SignUp() {
   const [formData, setFormData] = useState({

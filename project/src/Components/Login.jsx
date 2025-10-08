@@ -338,4 +338,4 @@ const Login = () => {
       </div>
     </div>
   );
-}
+};
