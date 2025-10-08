@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { User, Mail, Phone, MapPin, Lock, Leaf } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import  { getApiUrl } from '../config/api';
 
 export default function SignUp() {
   const [formData, setFormData] = useState({
@@ -12,7 +13,7 @@ export default function SignUp() {
     password: ''
   });
 
-  const handleChange = (e) => {
+  const handleChange = async (e) => {
     setFormData({
       ...formData,
       [e.target.name]: e.target.value
@@ -197,7 +198,7 @@ export default function SignUp() {
                   >
                     <option value="">Select your role</option>
                     <option value="user">User</option>
-                    <option value="volunteer">Driver</option>
+                    <option value="Driver">Driver</option>
                    
                   </select>
                   <svg

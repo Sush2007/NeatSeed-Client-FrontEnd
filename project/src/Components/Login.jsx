@@ -13,6 +13,49 @@ export default function Login() {
     password: ''
   });
 
+const Login = () => {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [message, setMessage] = useState('');
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setMessage('');
+    
+    if (!email || !password) {
+      setMessage('Please enter both email and password');
+      return;
+    }
+
+    try {
+      const response = await fetch(getApiUrl('login'), {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password }),
+      });
+
+      const data = await response.json();
+      
+      if (response.ok) {
+        setMessage(`Welcome back, ${data.user.full_name}!`);
+        // Store user data in localStorage for session management
+        localStorage.setItem('User', JSON.stringify(data.user));
+        // TODO: navigate to dashboard
+        setTimeout(() => {
+          // Redirect to dashboard or admin panel
+          window.location.href = '/dashboard';
+        }, 1500);
+      } else {
+        setMessage(data.message || 'Login failed');
+      }
+    } catch (err) {
+      setMessage('Network error. Please try again.');
+    }
+  };
+
   const handleChange = (e) => {
     setFormData({
       ...formData,
