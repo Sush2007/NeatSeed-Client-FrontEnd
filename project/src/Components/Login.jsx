@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { User, Mail, Phone, MapPin, Lock, Users, Truck, Recycle } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { getApiUrl } from '../config/api';
 
 export default function Login() {
   const [isSignUp, setIsSignUp] = useState(false);
@@ -12,49 +14,6 @@ export default function Login() {
     role: '',
     password: ''
   });
-
-const Login = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [showPassword, setShowPassword] = useState(false);
-  const [message, setMessage] = useState('');
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setMessage('');
-    
-    if (!email || !password) {
-      setMessage('Please enter both email and password');
-      return;
-    }
-
-    try {
-      const response = await fetch(getApiUrl('login'), {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email, password }),
-      });
-
-      const data = await response.json();
-      
-      if (response.ok) {
-        setMessage(`Welcome back, ${data.user.full_name}!`);
-        // Store user data in localStorage for session management
-        localStorage.setItem('User', JSON.stringify(data.user));
-        // TODO: navigate to dashboard
-        setTimeout(() => {
-          // Redirect to dashboard or admin panel
-          window.location.href = '/dashboard';
-        }, 1500);
-      } else {
-        setMessage(data.message || 'Login failed');
-      }
-    } catch (err) {
-      setMessage('Network error. Please try again.');
-    }
-  };
 
   const handleChange = (e) => {
     setFormData({
@@ -81,7 +40,6 @@ const Login = () => {
             <div className="text-center mb-8">
               <div className="flex items-center justify-center mb-4">
                 <div className="w-16 h-16 bg-gradient-to-br from-gray-100 to-gray-50 rounded-2xl shadow-lg flex items-center justify-center mr-3 relative">
-                  {/* Trash bin */}
                   <div className="relative">
                    <img src="logo.jpg" alt="logo" />
                   </div>
@@ -319,9 +277,6 @@ const Login = () => {
               <p className="text-xl text-white leading-relaxed mb-12">
                 Together, we're building a sustainable future through smart waste management and eco-friendly practices.
               </p>
-
-              {/* Stats */}
-             
             </div>
 
             {/* Decorative plant silhouettes at bottom */}
@@ -338,4 +293,4 @@ const Login = () => {
       </div>
     </div>
   );
-};
+}
