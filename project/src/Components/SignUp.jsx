@@ -198,7 +198,7 @@ export default function SignUp() {
                   >
                     <option value="">Select your role</option>
                     <option value="user">User</option>
-                    <option value="Driver">Driver</option>
+                    <option value="driver">Driver</option>
                    
                   </select>
                   <svg
