@@ -1,13 +1,14 @@
-// API configuration
+// This is the SAME backend URL as your admin app
 const API_BASE_URL = 'https://neatseed-b.onrender.com';
 
-// API endpoints
+// These keys now point to your CLIENT routes
 const API_ENDPOINTS = {
-  login: '/user_login',
-  signup: '/user_signup'
+  login: '/client/login',
+  signup: '/client/signup'
+  // Add more client routes here as you build them
 };
 
-// Helper function to get full endpoint URL
+// This function doesn't need to change
 export const getApiUrl = (endpoint) => {
   return `${API_BASE_URL}${API_ENDPOINTS[endpoint]}`;
 };

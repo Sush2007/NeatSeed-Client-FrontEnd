@@ -1,28 +1,100 @@
 import React, { useState } from 'react';
 import { User, Mail, Phone, MapPin, Lock, Leaf } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { getApiUrl } from '../config/api';
+import { useNavigate } from 'react-router-dom';
+import { getApiUrl } from '../config/api.js';
 
-export default function SignUp() {
+const Signup = () => {
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [message, setMessage] = useState('');
   const [formData, setFormData] = useState({
     fullName: '',
-    email: '',
     phone: '',
     address: '',
     role: '',
-    password: ''
+    email: '',
+    password: '',
+    confirmPassword: ''
   });
 
-  const handleChange = async (e) => {
-    setFormData({
+  const navigate = useNavigate();
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setMessage('');
+
+    if (!formData.fullName || !formData.phone || !formData.address || !formData.role || !formData.password || !formData.confirmPassword) {
+      setMessage('Please fill in all fields');
+      return;
+    }
+
+    if (formData.phone.length < 10) {
+      setMessage('Please enter a valid phone number');
+      return;
+    }
+    
+    if (formData.password.length < 6) {
+      setMessage('Password must be at least 6 characters');
+      return;
+    }
+
+    // Validation
+    if (formData.password !== formData.confirmPassword) {
+      setMessage('Passwords do not match');
+      return;
+    }
+
+    try {
+      const response = await fetch(getApiUrl('signup'), {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          fullName: formData.fullName,
+          email: formData.email,
+          password: formData.password
+        })
+      });
+
+      let data = {};
+      try {
+        data = await response.json(); // Safely attempt to parse JSON
+      } catch (e) {
+        // Server didn't send JSON (e.g., a simple HTML error page)
+        data.message = 'An unexpected server error occurred.';
+      }
+      
+      if (response.ok) {
+        setMessage('Account created successfully! You can now login.');
+        setFormData({
+          fullName: '',
+          phone: '',
+          address: '',
+          role: '',
+          email: '',
+          password: '',
+          confirmPassword: ''
+        });
+        setTimeout(() => {
+            navigate('/login'); // <-- Programmatic redirection
+        }, 1500);
+      }
+      else {
+        setMessage(data.message || 'Signup failed');
+      }
+    } catch (error) {
+      setMessage('Network error. Please try again.');
+    }
+  };
+
+const handleChange = (e) => {
+  setFormData({
       ...formData,
       [e.target.name]: e.target.value
     });
-  };
-
-  const handleSubmit = () => {
-    console.log('Form submitted:', formData);
-  };
+}
 
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
@@ -123,7 +195,7 @@ export default function SignUp() {
                     name="fullName"
                     value={formData.fullName}
                     onChange={handleChange}
-                    placeholder="John Doe"
+                    placeholder="Type your Name"
                     className="w-full pl-12 pr-4 py-3 bg-gray-100 border-0 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:bg-white transition-all outline-none text-gray-900 placeholder-gray-400"
                   />
                 </div>
@@ -141,7 +213,7 @@ export default function SignUp() {
                     name="email"
                     value={formData.email}
                     onChange={handleChange}
-                    placeholder="john@example.com"
+                    placeholder="Entrer your email(Optional)"
                     className="w-full pl-12 pr-4 py-3 bg-gray-100 border-0 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:bg-white transition-all outline-none text-gray-900 placeholder-gray-400"
                   />
                 </div>
@@ -159,7 +231,7 @@ export default function SignUp() {
                     name="phone"
                     value={formData.phone}
                     onChange={handleChange}
-                    placeholder="1234567890"
+                    placeholder="Type your Phone Number"
                     className="w-full pl-12 pr-4 py-3 bg-gray-100 border-0 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:bg-white transition-all outline-none text-gray-900 placeholder-gray-400"
                   />
                 </div>
@@ -176,7 +248,7 @@ export default function SignUp() {
                     name="address"
                     value={formData.address}
                     onChange={handleChange}
-                    placeholder="Enter your complete address"
+                    placeholder="Please Enter your Complete Address"
                     rows="3"
                     className="w-full pl-12 pr-4 py-3 bg-gray-100 border-0 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:bg-white transition-all outline-none text-gray-900 placeholder-gray-400 resize-none"
                   ></textarea>
@@ -224,7 +296,7 @@ export default function SignUp() {
                     name="password"
                     value={formData.password}
                     onChange={handleChange}
-                    placeholder="••••••••"
+                    placeholder=""
                     className="w-full pl-12 pr-4 py-3 bg-gray-100 border-0 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:bg-white transition-all outline-none text-gray-900 placeholder-gray-400"
                   />
                 </div>
@@ -233,9 +305,8 @@ export default function SignUp() {
               {/* Submit Button */}
               <button
                 onClick={handleSubmit}
-                className="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-semibold py-3 px-6 rounded-xl transition-colors duration-200 shadow-lg hover:shadow-xl mt-6"
-              >
-                Create Account
+                className="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-semibold py-3 px-6 rounded-xl transition-colors duration-200 shadow-lg hover:shadow-xl mt-6">
+                  Create Account
               </button>
 
               {/* Sign In Link */}
@@ -255,3 +326,5 @@ export default function SignUp() {
     </div>
   );
 }
+
+export default Signup;

@@ -1,60 +1,4 @@
-import React, { useState } from 'react';
-import { User, Mail, Phone, MapPin, Lock, Users, Truck, Recycle } from 'lucide-react';
-import { Link } from 'react-router-dom';
-import { useNavigate } from 'react-router-dom';
-import { getApiUrl } from '../config/api.js';
 
-export const Login = () => {
-  const [identifier, setIdentifier] = useState('email'); 
-  const [password, setPassword] = useState('');
-  const [showPassword, setShowPassword] = useState(false);
-  const [message, setMessage] = useState('');
-  const navigate = useNavigate();
-
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setMessage('');
-    if (!identifier || !password) {
-      setMessage('Please enter both email/phone number and password');
-      return;
-    }
-
-    try {
-      const response = await fetch(getApiUrl('login'), {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ identifier: identifier, password: password }),
-      });
-
-      const data = await response.json();
-      
-      if (response.ok) {
-        setMessage(`Welcome back`);
-        // Store user data in localStorage for session management
-        localStorage.setItem('clientUser', JSON.stringify(data.user));
-
-        // TODO: navigate to dashboard
-        setTimeout(() => {
-          // Redirect to dashboard or admin panel
-          navigate('/dashboard');
-        }, 1500);
-
-      } else {
-        setMessage(data.message || 'Login failed');
-      }
-    } catch (err) {
-      setMessage('Network error. Please try again.');
-    }
-  };
-
-  const handleGoogleLogin = () => {
-    console.log('Login with Google');
-  };
-
-  return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
       <div className="w-full max-w-6xl bg-white rounded-3xl shadow-xl overflow-hidden">
         <div className="flex flex-col lg:flex-row">
@@ -76,22 +20,37 @@ export const Login = () => {
             </div>
 
             <div className="max-w-md mx-auto">
-              {/* Welcome Header - Simplified */}
+              {/* Welcome Header */}
               <div className="mb-8">
                 <h2 className="text-2xl lg:text-3xl font-bold text-gray-900 mb-2">
-                  Welcome Back
+                  {isSignUp ? 'Create Account' : 'Welcome Back'}
                 </h2>
                 <p className="text-gray-500">
-                  Sign in to your account to continue
+                  {isSignUp ? 'Join the NeatSeed community' : 'Sign in to your account to continue'}
                 </p>
               </div>
+              <div className="space-y-5">
+                {/* Full Name - Sign Up Only */}
+                {isSignUp && (
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-2">
+                      Full Name
+                    </label>
+                    <div className="relative">
+                      <User className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                      <input
+                        type="text"
+                        name="fullName"
+                        value={formData.fullName}
+                        onChange={handleChange}
+                        placeholder="John Doe"
+                        className="w-full pl-12 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all outline-none text-gray-900 placeholder-gray-400"
+                      />
+                    </div>
+                  </div>
+                )}
 
-              {/* Removed "User Type Selection" - this is a login page */}
-              
-              {/* --- FORM STARTS HERE --- */}
-              <form onSubmit={handleSubmit} className="space-y-5">
-                
-                {/* --- KEY CHANGE 1: "Identifier" Input --- */}
+                {/* Email / Phone */}
                 <div>
                   <label className="block text-sm font-semibold text-gray-700 mb-2">
                     Email / Phone Number
@@ -100,16 +59,56 @@ export const Login = () => {
                     <Mail className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
                     <input
                       type="text"
-                      name="identifier"
-                      value={identifier} /* Use 'identifier' state */
-                      onChange={(e) => setIdentifier(e.target.value)} /* Update 'identifier' state */
+                      name="email"
+                      value={formData.email}
+                      onChange={handleChange}
                       placeholder="Enter your email or phone"
                       className="w-full pl-12 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all outline-none text-gray-900 placeholder-gray-400"
                     />
                   </div>
                 </div>
 
-                {/* --- KEY CHANGE 2: "Password" Input --- */}
+                {/* Phone - Sign Up Only */}
+                {isSignUp && (
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-2">
+                      Phone Number
+                    </label>
+                    <div className="relative">
+                      <Phone className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                      <input
+                        type="tel"
+                        name="phone"
+                        value={formData.phone}
+                        onChange={handleChange}
+                        placeholder="1234567890"
+                        className="w-full pl-12 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all outline-none text-gray-900 placeholder-gray-400"
+                      />
+                    </div>
+                  </div>
+                )}
+
+                {/* Address - Sign Up Only */}
+                {isSignUp && (
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-2">
+                      Address
+                    </label>
+                    <div className="relative">
+                      <MapPin className="absolute left-4 top-4 text-gray-400 w-5 h-5" />
+                      <textarea
+                        name="address"
+                        value={formData.address}
+                        onChange={handleChange}
+                        placeholder="Enter your complete address"
+                        rows="3"
+                        className="w-full pl-12 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all outline-none text-gray-900 placeholder-gray-400 resize-none"
+                      ></textarea>
+                    </div>
+                  </div>
+                )}
+
+                {/* Password */}
                 <div>
                   <label className="block text-sm font-semibold text-gray-700 mb-2">
                     Password
@@ -117,59 +116,47 @@ export const Login = () => {
                   <div className="relative">
                     <Lock className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
                     <input
-                      type={showPassword ? "text" : "password"} /* Added showPassword logic */
+                      type="password"
                       name="password"
-                      value={password} /* Use 'password' state */
-                      onChange={(e) => setPassword(e.target.value)} /* Update 'password' state */
+                      value={formData.password}
+                      onChange={handleChange}
                       placeholder="Enter your password"
-                      className="w-full pl-12 pr-10 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all outline-none text-gray-900 placeholder-gray-400"
+                      className="w-full pl-12 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all outline-none text-gray-900 placeholder-gray-400"
                     />
-                    {/* Optional: Show/Hide button */}
-                    <button
-                      type="button"
-                      onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
-                    >
-                      {showPassword ? "Hide" : "Show"}
-                    </button>
                   </div>
                 </div>
 
-                {/* Forgot Password */}
-                <div className="text-right">
-                  <Link to="/forgotpassword" className="text-emerald-600 hover:text-emerald-700 font-medium text-sm cursor-pointer">
-                    Forgot Password?
-                  </Link>
-                </div>
-
-                {/* --- KEY CHANGE 3: Message Display --- */}
-                {message && (
-                  <div className={`text-center text-sm p-3 rounded-lg ${
-                    message.includes('Welcome') 
-                      ? 'bg-green-100 text-green-700' 
-                      : 'bg-red-100 text-red-700'
-                  }`}>
-                    {message}
+                {/* Forgot Password - Login Only */}
+                {!isSignUp && (
+                  <div className="text-right">
+                    <Link to="/forgotpassword" className="text-emerald-600 hover:text-emerald-700 font-medium text-sm cursor-pointer">
+                      Forgot Password?
+                    </Link>
                   </div>
                 )}
 
-                {/* --- KEY CHANGE 4: Submit Button --- */}
+                {/* Submit Button */}
                 <button
-                  type="submit" /* Use type="submit" for forms */
+                  onClick={handleSubmit}
                   className="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-semibold py-3 px-6 rounded-xl transition-colors duration-200 shadow-lg hover:shadow-xl"
                 >
-                  Sign In
+                  {isSignUp ? 'Create Account' : 'Sign In'}
                 </button>
 
                 {/* Divider */}
                 <div className="relative my-6">
-                  {/* ... (divider JSX) ... */}
+                  <div className="absolute inset-0 flex items-center">
+                    <div className="w-full border-t border-gray-200"></div>
+                  </div>
+                  <div className="relative flex justify-center text-sm">
+                    <span className="px-4 bg-white text-gray-500">OR CONTINUE WITH</span>
+                  </div>
                 </div>
 
                 {/* Google Login */}
                 <button
-                  type="button" /* Use type="button" so it doesn't submit the form */
-                  onClick={handleGoogleLogin}className="w-full flex items-center justify-center gap-3 py-3 px-6 border-2 border-gray-200 rounded-xl hover:bg-gray-50 transition-colors duration-200 font-medium text-gray-700"
+                  onClick={handleGoogleLogin}
+                  className="w-full flex items-center justify-center gap-3 py-3 px-6 border-2 border-gray-200 rounded-xl hover:bg-gray-50 transition-colors duration-200 font-medium text-gray-700"
                 >
                   <svg className="w-5 h-5" viewBox="0 0 24 24">
                     <path
@@ -192,18 +179,17 @@ export const Login = () => {
                   Login with Google
                 </button>
 
-                {/* --- KEY CHANGE 5: Toggle Sign Up Link --- */}
+                {/* Toggle Sign Up / Login */}
                 <p className="text-center text-gray-600 text-sm mt-6">
-                  Don't have an account?{' '}
-                  <Link
-                    to="/signup" /* Use a proper Link */
+                  {isSignUp ? 'Already have an account?' : "Don't have an account?"}{' '}
+                  <span
+                    onClick={() => setIsSignUp(!isSignUp)}
                     className="text-emerald-600 hover:text-emerald-700 font-semibold cursor-pointer"
                   >
-                    Sign Up
-                  </Link>
+                    {isSignUp ? 'Sign In' : 'Sign Up'}
+                  </span>
                 </p>
-
-              </form> {/* --- FORM ENDS HERE --- */}
+              </div>
             </div>
           </div>
 
@@ -243,4 +229,3 @@ export const Login = () => {
       </div>
     </div>
   );
-}
