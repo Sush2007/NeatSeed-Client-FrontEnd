@@ -53,6 +53,9 @@ const Signup = () => {
         },
         body: JSON.stringify({
           fullName: formData.fullName,
+          phone: formData.phone,
+          address: formData.address,
+          role: formData.role,
           email: formData.email,
           password: formData.password
         })
@@ -263,7 +266,7 @@ const handleChange = (e) => {
                 <div className="relative">
                   <User className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5 pointer-events-none" />
                   <select
-                    // name="role"
+                    name="role"
                     value={formData.role}
                     onChange={handleChange}
                     className="w-full pl-12 pr-10 py-3 bg-gray-100 border-2 border-emerald-500 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:bg-white transition-all outline-none text-gray-900 appearance-none cursor-pointer"

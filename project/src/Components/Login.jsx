@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import { getApiUrl } from '../config/api.js';
 
 export const Login = () => {
-  const [identifier, setIdentifier] = useState('email'); 
+  const [identifier, setIdentifier] = useState(''); 
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [message, setMessage] = useState('');
