@@ -181,6 +181,7 @@ const handleChange = (e) => {
               <p className="text-gray-500">Fill in your details to get started</p>
             </div>
 
+          <form onSubmit={handleSubmit} className="space-y-5"> 
             <div className="space-y-5">
               {/* Full Name */}
               <div>
@@ -304,11 +305,21 @@ const handleChange = (e) => {
               {/* Submit Button */}
               <button
                 type='submit'
-                onClick={handleSubmit}
                 className="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-semibold py-3 px-6 rounded-xl transition-colors duration-200 shadow-lg hover:shadow-xl mt-6">
                   Create Account
               </button>
-
+            </div>
+            </form>
+            {/* Message Display */}
+            {message && (
+             <div className={`text-center text-sm mt-4 p-3 rounded-lg ${
+               message.includes('successfully') 
+                 ? 'bg-green-100 text-green-700' 
+                 : 'bg-red-100 text-red-700'
+             }`}>
+               {message}
+             </div>
+           )}
               {/* Sign In Link */}
               <p className="text-center text-gray-600 text-sm mt-4">
                 Already have an account?{' '}
@@ -323,7 +334,6 @@ const handleChange = (e) => {
           </div>
         </div>
       </div>
-    </div>
   );
 }
 
