@@ -307,6 +307,7 @@ const handleChange = (e) => {
 
               {/* Submit Button */}
               <button
+                type='submit'
                 onClick={handleSubmit}
                 className="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-semibold py-3 px-6 rounded-xl transition-colors duration-200 shadow-lg hover:shadow-xl mt-6">
                   Create Account
