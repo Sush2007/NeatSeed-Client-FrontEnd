@@ -6,7 +6,6 @@ import { getApiUrl } from '../config/api.js';
 
 const Signup = () => {
   const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [message, setMessage] = useState('');
   const [formData, setFormData] = useState({
     fullName: '',
@@ -15,16 +14,17 @@ const Signup = () => {
     role: '',
     email: '',
     password: '',
-    confirmPassword: ''
   });
 
   const navigate = useNavigate();
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setMessage('');
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  console.log("handleSubmit CALLED"); // <-- Add this log
+  setMessage('');
 
-    if (!formData.fullName || !formData.phone || !formData.address || !formData.role || !formData.password || !formData.confirmPassword) {
+  console.log("Form Data:", formData); // <-- Add this log
+   if (!formData.fullName || !formData.phone || !formData.address || !formData.role || !formData.password) {
       setMessage('Please fill in all fields');
       return;
     }
@@ -39,29 +39,25 @@ const Signup = () => {
       return;
     }
 
-    // Validation
-    if (formData.password !== formData.confirmPassword) {
-      setMessage('Passwords do not match');
-      return;
-    }
-
-    try {
-      const response = await fetch(getApiUrl('signup'), {
+  try {
+    console.log("Attempting FETCH to:", getApiUrl('signup')); // <-- Add this log
+    const response = await fetch(getApiUrl('signup'), {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          fullName: formData.fullName,
-          phone: formData.phone,
-          address: formData.address,
-          role: formData.role,
-          email: formData.email,
-          password: formData.password
-        })
-      });
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            fullName: formData.fullName,
+            phone: formData.phone,
+            address: formData.address,
+            role: formData.role,
+            email: formData.email,
+            password: formData.password
+          })
+        });
+    console.log("Fetch response received"); // <-- Add this log
 
-      let data = {};
+     let data = {};
       try {
         data = await response.json(); // Safely attempt to parse JSON
       } catch (e) {
@@ -78,7 +74,6 @@ const Signup = () => {
           role: '',
           email: '',
           password: '',
-          confirmPassword: ''
         });
         setTimeout(() => {
             navigate('/login'); // <-- Programmatic redirection
@@ -88,9 +83,10 @@ const Signup = () => {
         setMessage(data.message || 'Signup failed');
       }
     } catch (error) {
-      setMessage('Network error. Please try again.');
-    }
-  };
+    console.error("Fetch FAILED:", error); // <-- Add this log
+    setMessage('Network error. Please try again.');
+  }
+};
 
 const handleChange = (e) => {
   setFormData({
