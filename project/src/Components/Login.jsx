@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { User, Mail, Phone, MapPin, Lock, Users, Truck, Recycle } from 'lucide-react';
+import { User, Mail, Lock, } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 import { getApiUrl } from '../config/api.js';

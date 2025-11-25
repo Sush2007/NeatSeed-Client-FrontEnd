@@ -24,8 +24,13 @@ const handleSubmit = async (e) => {
   setMessage('');
 
   console.log("Form Data:", formData); // <-- Add this log
-   if (!formData.fullName || !formData.phone || !formData.address || !formData.role || !formData.password) {
+   if (!formData.fullName || !formData.phone || !formData.address || !formData.role || !formData.password || !formData.email) {
       setMessage('Please fill in all fields');
+      return;
+    }
+
+    if (formData.email && !/\S+@\S+\.\S+/.test(formData.email)) {
+      setMessage('Please enter a valid email address');
       return;
     }
 
@@ -213,7 +218,7 @@ const handleChange = (e) => {
                     name="email"
                     value={formData.email}
                     onChange={handleChange}
-                    placeholder="Entrer your email(Optional)"
+                    placeholder="Entrer your email"
                     className="w-full pl-12 pr-4 py-3 bg-gray-100 border-0 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:bg-white transition-all outline-none text-gray-900 placeholder-gray-400"
                   />
                 </div>
