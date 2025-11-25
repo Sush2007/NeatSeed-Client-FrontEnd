@@ -97,11 +97,10 @@ const OtpVerificationContent = () => {
     setError('');
     
     try {
-      // Simulating API Call - Replace with fetch to your backend
-      // const response = await fetch(getApiUrl('verify_otp'), {
-      //   method: 'POST',
-      //   body: JSON.stringify({ email, otp: code, role })
-      // });
+      const response = await fetch(getApiUrl('/client/verify_otp'), {
+        method: 'POST',
+        body: JSON.stringify({ email, otp: code, role })
+      });
 
       await new Promise(resolve => setTimeout(resolve, 1500));
       setSuccess('Verified successfully!');

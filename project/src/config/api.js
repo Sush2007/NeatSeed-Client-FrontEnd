@@ -4,8 +4,8 @@ const API_BASE_URL = 'https://neatseed-b.onrender.com';
 // These keys now point to your CLIENT routes
 const API_ENDPOINTS = {
   login: '/client/login',
-  signup: '/client/signup'
-  // Add more client routes here as you build them
+  signup: '/client/signup',
+  verify_otp: '/client/verify-otp'
 };
 
 // This function doesn't need to change
