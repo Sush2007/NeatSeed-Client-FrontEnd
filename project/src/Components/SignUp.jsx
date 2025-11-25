@@ -3,6 +3,7 @@ import { User, Mail, Phone, MapPin, Lock, Leaf } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 import { getApiUrl } from '../config/api.js';
+import OtpVerification from './Components/OtpVerification';
 
 const Signup = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -71,7 +72,7 @@ const handleSubmit = async (e) => {
       }
       
       if (response.ok) {
-        setMessage('Account created successfully! You can now login.');
+        setMessage('Account created successfully!Redirecting to verification...');
         setFormData({
           fullName: '',
           phone: '',
@@ -81,7 +82,7 @@ const handleSubmit = async (e) => {
           password: '',
         });
         setTimeout(() => {
-            navigate('/login'); // <-- Programmatic redirection
+            navigate('/verify-otp', { state: { email: formData.email, role: formData.role } }); // <-- Programmatic redirection with state
         }, 1500);
       }
       else {
