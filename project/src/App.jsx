@@ -3,6 +3,7 @@ import HomePage from './Components/HomePage'
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import SignUp from './Components/SignUp.jsx';
 import { Login } from './Components/Login.jsx';
+import OtpVerification from './Components/OtpVerification';
 
 
 const App = () => {

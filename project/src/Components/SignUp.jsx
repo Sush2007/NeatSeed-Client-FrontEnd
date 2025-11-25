@@ -3,7 +3,6 @@ import { User, Mail, Phone, MapPin, Lock, Leaf } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 import { getApiUrl } from '../config/api.js';
-import OtpVerification from './Components/OtpVerification';
 
 const Signup = () => {
   const [showPassword, setShowPassword] = useState(false);
