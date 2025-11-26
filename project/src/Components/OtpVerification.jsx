@@ -86,6 +86,9 @@ const OtpVerificationContent = () => {
     try {
       const response = await fetch(getApiUrl('verify_otp'), {
         method: 'POST',
+        headers: {
+          'Content-Type': 'application/json', // <--- THIS WAS MISSING
+        },
         body: JSON.stringify({ email, otp: code, role })
       });
 
