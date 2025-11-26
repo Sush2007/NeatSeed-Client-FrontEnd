@@ -84,7 +84,7 @@ const OtpVerificationContent = () => {
     setError('');
 
     try {
-      const response = await fetch(getApiUrl('/client/verify_otp'), {
+      const response = await fetch(getApiUrl('verify_otp'), {
         method: 'POST',
         body: JSON.stringify({ email, otp: code, role })
       });
