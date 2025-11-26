@@ -51,6 +51,7 @@ const Signup = () => {
       });
 
       const data = await response.json();
+      console.log("Server Response:", data);
 
       if (response.ok) {
         setMessage('Account created successfully! Redirecting to verification...');
@@ -66,8 +67,8 @@ const Signup = () => {
         setMessage(data.message || 'Signup failed. Please try again.');
       }
     } catch (error) {
-      console.error('Signup error:', error);
-      setMessage('An error occurred. Please try again later.');
+      console.error("Network/Client Error:", error);
+      setMessage('Network error. Check your console.');
     }
   };
 
