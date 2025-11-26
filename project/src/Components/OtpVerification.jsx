@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { useLocation, useNavigate, BrowserRouter } from 'react-router-dom';
 import { CheckCircle, AlertCircle, Leaf, ArrowRight, Loader2, Mail } from 'lucide-react';
+import { getApiUrl } from '../config/api.js';
 
 // --- Custom Animated Background Components ---
 
@@ -26,11 +27,11 @@ const FloatingLeaf = ({ delay, x, y, scale, rotate }) => (
 );
 
 const GradientOrb = ({ className, animate }) => (
-    <motion.div
-        className={`absolute rounded-full blur-3xl opacity-30 pointer-events-none z-0 ${className}`}
-        animate={animate}
-        transition={{ duration: 10, repeat: Infinity, repeatType: "reverse", ease: "easeInOut" }}
-    />
+  <motion.div
+    className={`absolute rounded-full blur-3xl opacity-30 pointer-events-none z-0 ${className}`}
+    animate={animate}
+    transition={{ duration: 10, repeat: Infinity, repeatType: "reverse", ease: "easeInOut" }}
+  />
 );
 
 
@@ -40,26 +41,12 @@ const OtpVerificationContent = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
-  const [timer, setTimer] = useState(30); 
+  const [timer, setTimer] = useState(30);
 
   const location = useLocation();
   const navigate = useNavigate();
   const inputRefs = useRef([]);
-
-  // --- KEY CHANGE: Extract Email & Role from Navigation State ---
-  // If state is missing (e.g. direct URL access), fallback or redirect
-  const { email, role } = location.state || { email: 'your-email@example.com', role: 'user' };
-
-  useEffect(() => {
-    // Optional: Redirect if no email found (security best practice)
-    // if (!location.state?.email) navigate('/login'); 
-
-    let interval;
-    if (timer > 0) {
-      interval = setInterval(() => setTimer((prev) => prev - 1), 1000);
-    }
-    return () => clearInterval(interval);
-  }, [timer]); // Add navigate to dependency if uncommenting redirect
+  const { email, role } = location.state || {};
 
   const handleChange = (index, value) => {
     if (isNaN(value)) return;
@@ -81,8 +68,8 @@ const OtpVerificationContent = () => {
     e.preventDefault();
     const data = e.clipboardData.getData('text').slice(0, 6).split('');
     if (data.length === 6 && data.every(char => !isNaN(char))) {
-        setOtp(data);
-        inputRefs.current[5].focus();
+      setOtp(data);
+      inputRefs.current[5].focus();
     }
   };
 
@@ -95,7 +82,7 @@ const OtpVerificationContent = () => {
     }
     setIsLoading(true);
     setError('');
-    
+
     try {
       const response = await fetch(getApiUrl('/client/verify_otp'), {
         method: 'POST',
@@ -104,12 +91,12 @@ const OtpVerificationContent = () => {
 
       await new Promise(resolve => setTimeout(resolve, 1500));
       setSuccess('Verified successfully!');
-      
+
       setTimeout(() => {
         if (role === 'admin') {
-            navigate('/dashboard'); // Admin Dashboard
+          navigate('/dashboard'); // Admin Dashboard
         } else {
-            navigate('/'); // Client/User Home or Dashboard
+          navigate('/'); // Client/User Home or Dashboard
         }
       }, 1000);
     } catch (err) {
@@ -130,17 +117,17 @@ const OtpVerificationContent = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-green-50 to-emerald-100 p-4 relative overflow-hidden">
-      
+
       {/* --- 3D-like Animated Background Layer --- */}
-      <GradientOrb 
+      <GradientOrb
         className="top-[-10%] left-[-10%] w-96 h-96 bg-green-300"
         animate={{ scale: [1, 1.2, 1], x: [0, 50, 0], y: [0, 30, 0] }}
       />
-      <GradientOrb 
+      <GradientOrb
         className="bottom-[-10%] right-[-10%] w-[30rem] h-[30rem] bg-emerald-300"
         animate={{ scale: [1, 1.1, 1], x: [0, -50, 0], y: [0, -50, 0] }}
       />
-      <GradientOrb 
+      <GradientOrb
         className="top-[40%] right-[20%] w-64 h-64 bg-lime-200"
         animate={{ scale: [1, 1.3, 1], opacity: [0.2, 0.4, 0.2] }}
       />
@@ -151,7 +138,7 @@ const OtpVerificationContent = () => {
       <FloatingLeaf delay={3} x={window.innerWidth / 2 + 200} y={window.innerHeight / 2 - 100} scale={1} rotate={180} />
 
       {/* --- Main Content Card --- */}
-      <motion.div 
+      <motion.div
         initial={{ opacity: 0, y: 20, scale: 0.95 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
         transition={{ duration: 0.6, ease: "easeOut" }}
@@ -161,109 +148,101 @@ const OtpVerificationContent = () => {
         <div className="absolute inset-0 rounded-[2rem] bg-gradient-to-br from-white/40 to-transparent pointer-events-none" />
 
         <div className="relative z-20">
-            <div className="flex justify-center mb-8">
-            <motion.div 
-                initial={{ scale: 0 }}
-                animate={{ scale: 1 }}
-                transition={{ type: "spring", stiffness: 260, damping: 20, delay: 0.1 }}
-                className="w-20 h-20 bg-gradient-to-tr from-green-100 to-emerald-50 rounded-2xl flex items-center justify-center shadow-inner border border-white"
+          <div className="flex justify-center mb-8">
+            <motion.div
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+              transition={{ type: "spring", stiffness: 260, damping: 20, delay: 0.1 }}
+              className="w-20 h-20 bg-gradient-to-tr from-green-100 to-emerald-50 rounded-2xl flex items-center justify-center shadow-inner border border-white"
             >
-                <Mail className="w-10 h-10 text-green-600" />
+              <Mail className="w-10 h-10 text-green-600" />
             </motion.div>
-            </div>
+          </div>
 
-            <div className="text-center mb-8">
+          <div className="text-center mb-8">
             <h2 className="text-3xl font-extrabold text-gray-800 mb-2 tracking-tight">Verify Email</h2>
             <p className="text-gray-600 text-sm font-medium">
-                We've sent a secure code to <br/>
-                {/* --- DYNAMIC EMAIL DISPLAY --- */}
-                <span className="text-emerald-600 font-bold bg-emerald-50 px-2 py-0.5 rounded-md">{email}</span>
+              We've sent a secure code to <br />
+              {/* --- DYNAMIC EMAIL DISPLAY --- */}
+              <span className="text-emerald-600 font-bold bg-emerald-50 px-2 py-0.5 rounded-md">{email}</span>
             </p>
-            </div>
+          </div>
 
-            <form onSubmit={handleVerify}>
+          <form onSubmit={handleVerify}>
             <div className="flex justify-between gap-2 mb-8">
-                {otp.map((digit, index) => (
+              {otp.map((digit, index) => (
                 <motion.input
-                    key={index}
-                    ref={(el) => (inputRefs.current[index] = el)}
-                    type="text"
-                    maxLength={1}
-                    value={digit}
-                    onChange={(e) => handleChange(index, e.target.value)}
-                    onKeyDown={(e) => handleKeyDown(index, e)}
-                    onPaste={handlePaste}
-                    className="w-12 h-14 text-center text-2xl font-bold border-2 border-gray-100 rounded-xl bg-white/50 text-gray-800 focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/20 outline-none transition-all shadow-sm"
-                    whileFocus={{ scale: 1.1, y: -2, borderColor: "#10b981" }}
+                  key={index}
+                  ref={(el) => (inputRefs.current[index] = el)}
+                  type="text"
+                  maxLength={1}
+                  value={digit}
+                  onChange={(e) => handleChange(index, e.target.value)}
+                  onKeyDown={(e) => handleKeyDown(index, e)}
+                  onPaste={handlePaste}
+                  className="w-12 h-14 text-center text-2xl font-bold border-2 border-gray-100 rounded-xl bg-white/50 text-gray-800 focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/20 outline-none transition-all shadow-sm"
+                  whileFocus={{ scale: 1.1, y: -2, borderColor: "#10b981" }}
                 />
-                ))}
+              ))}
             </div>
 
             {error && (
-                <motion.div 
-                    initial={{ opacity: 0, y: -10 }} 
-                    animate={{ opacity: 1, y: 0 }} 
-                    className="flex items-center justify-center gap-2 text-red-600 text-sm mb-6 bg-red-50 border border-red-100 p-3 rounded-xl"
-                >
+              <motion.div
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="flex items-center justify-center gap-2 text-red-600 text-sm mb-6 bg-red-50 border border-red-100 p-3 rounded-xl"
+              >
                 <AlertCircle size={16} /> {error}
-                </motion.div>
+              </motion.div>
             )}
-            
+
             {success && (
-                <motion.div 
-                    initial={{ opacity: 0, y: -10 }} 
-                    animate={{ opacity: 1, y: 0 }} 
-                    className="flex items-center justify-center gap-2 text-green-700 text-sm mb-6 bg-green-50 border border-green-100 p-3 rounded-xl"
-                >
+              <motion.div
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="flex items-center justify-center gap-2 text-green-700 text-sm mb-6 bg-green-50 border border-green-100 p-3 rounded-xl"
+              >
                 <CheckCircle size={16} /> {success}
-                </motion.div>
+              </motion.div>
             )}
 
             <motion.button
-                disabled={isLoading}
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                className="w-full bg-gradient-to-r from-green-600 to-emerald-600 text-white font-bold py-4 rounded-xl shadow-lg shadow-emerald-500/30 hover:shadow-emerald-600/40 transition-all flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
+              disabled={isLoading}
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              className="w-full bg-gradient-to-r from-green-600 to-emerald-600 text-white font-bold py-4 rounded-xl shadow-lg shadow-emerald-500/30 hover:shadow-emerald-600/40 transition-all flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
             >
-                {isLoading ? <Loader2 className="animate-spin" /> : <span>Verify Account</span>}
-                {!isLoading && <ArrowRight size={20} />}
+              {isLoading ? <Loader2 className="animate-spin" /> : <span>Verify Account</span>}
+              {!isLoading && <ArrowRight size={20} />}
             </motion.button>
-            </form>
+          </form>
 
-            <div className="text-center mt-8 text-sm text-gray-500">
+          <div className="text-center mt-8 text-sm text-gray-500">
             Didn't receive the code?{' '}
             {timer > 0 ? (
-                <span className="text-emerald-600 font-semibold inline-block min-w-[3ch]">00:{timer < 10 ? `0${timer}` : timer}</span>
+              <span className="text-emerald-600 font-semibold inline-block min-w-[3ch]">00:{timer < 10 ? `0${timer}` : timer}</span>
             ) : (
-                <button 
-                onClick={handleResend} 
+              <button
+                onClick={handleResend}
                 className="text-emerald-700 font-bold hover:text-emerald-800 hover:underline cursor-pointer transition-colors"
-                >
+              >
                 Resend Now
-                </button>
+              </button>
             )}
-            </div>
-            
-            <div className="mt-8 pt-6 border-t border-gray-200/60 text-center">
-            <button 
-                onClick={() => navigate('/login')} 
-                className="group text-sm text-gray-500 hover:text-emerald-700 transition-colors flex items-center justify-center gap-1 mx-auto font-medium"
+          </div>
+
+          <div className="mt-8 pt-6 border-t border-gray-200/60 text-center">
+            <button
+              onClick={() => navigate('/login')}
+              className="group text-sm text-gray-500 hover:text-emerald-700 transition-colors flex items-center justify-center gap-1 mx-auto font-medium"
             >
-                <span className="group-hover:-translate-x-1 transition-transform">←</span> Back to Login
+              <span className="group-hover:-translate-x-1 transition-transform">←</span> Back to Login
             </button>
-            </div>
+          </div>
         </div>
       </motion.div>
-
     </div>
   );
 };
 
-// Wrapper for Standalone Preview
-export default function OtpVerification() {
-  return (
-    <BrowserRouter>
-      <OtpVerificationContent />
-    </BrowserRouter>
-  );
-}
+export default OtpVerificationContent;

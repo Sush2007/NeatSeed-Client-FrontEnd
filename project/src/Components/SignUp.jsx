@@ -18,13 +18,20 @@ const Signup = () => {
 
   const navigate = useNavigate();
 
-const handleSubmit = async (e) => {
-  e.preventDefault();
-  console.log("handleSubmit CALLED"); // <-- Add this log
-  setMessage('');
+  const handleChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value
+    });
+  };
 
-  console.log("Form Data:", formData); // <-- Add this log
-   if (!formData.fullName || !formData.phone || !formData.address || !formData.role || !formData.password || !formData.email) {
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    console.log("handleSubmit CALLED");
+    setMessage('');
+
+    console.log("Form Data:", formData);
+    if (!formData.fullName || !formData.phone || !formData.address || !formData.role || !formData.password || !formData.email) {
       setMessage('Please fill in all fields');
       return;
     }
@@ -34,71 +41,35 @@ const handleSubmit = async (e) => {
       return;
     }
 
-    if (formData.phone.length < 10) {
-      setMessage('Please enter a valid phone number');
-      return;
-    }
-    
-    if (formData.password.length < 6) {
-      setMessage('Password must be at least 6 characters');
-      return;
-    }
-
-  try {
-    console.log("Attempting FETCH to:", getApiUrl('signup')); // <-- Add this log
-    const response = await fetch(getApiUrl('signup'), {
+    try {
+      const response = await fetch(getApiUrl('signup'), {
         method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            fullName: formData.fullName,
-            phone: formData.phone,
-            address: formData.address,
-            role: formData.role,
-            email: formData.email,
-            password: formData.password
-          })
-        });
-    console.log("Fetch response received"); // <-- Add this log
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
 
-     let data = {};
-      try {
-        data = await response.json(); // Safely attempt to parse JSON
-      } catch (e) {
-        // Server didn't send JSON (e.g., a simple HTML error page)
-        data.message = 'An unexpected server error occurred.';
-      }
-      
+      const data = await response.json();
+
       if (response.ok) {
-        setMessage('Account created successfully!Redirecting to verification...');
-        setFormData({
-          fullName: '',
-          phone: '',
-          address: '',
-          role: '',
-          email: '',
-          password: '',
-        });
+        setMessage('Account created successfully! Redirecting to verification...');
         setTimeout(() => {
-            navigate('/verify-otp', { state: { email: formData.email, role: formData.role } }); // <-- Programmatic redirection with state
-        }, 1500);
-      }
-      else {
-        setMessage(data.message || 'Signup failed');
+          navigate('/verify-otp', {
+            state: {
+              email: formData.email,
+              role: formData.role
+            }
+          });
+        }, 2000);
+      } else {
+        setMessage(data.message || 'Signup failed. Please try again.');
       }
     } catch (error) {
-    console.error("Fetch FAILED:", error); // <-- Add this log
-    setMessage('Network error. Please try again.');
-  }
-};
-
-const handleChange = (e) => {
-  setFormData({
-      ...formData,
-      [e.target.name]: e.target.value
-    });
-}
+      console.error('Signup error:', error);
+      setMessage('An error occurred. Please try again later.');
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
@@ -108,9 +79,9 @@ const handleChange = (e) => {
           <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-emerald-500 to-emerald-600 p-12 flex-col justify-center items-center text-white relative overflow-hidden">
             <div className="text-center relative z-10">
               <div className="w-24 h-24 bg-opacity-40 rounded-full flex items-center justify-center mx-auto mb-8">
-               <img src="logo.jpg" alt="logo" />
+                <img src="logo.jpg" alt="logo" />
               </div>
-              
+
               <h1 className="text-5xl font-bold mb-6">Join NeatSeed</h1>
               <p className="text-xl text-white leading-relaxed mb-12 max-w-md">
                 Be part of our eco-friendly community. Together, we're making the world cleaner and greener.
@@ -121,16 +92,16 @@ const handleChange = (e) => {
                 {/* Background circles */}
                 <div className="absolute top-10 right-10 w-40 h-40 bg-emerald-200 rounded-full opacity-30"></div>
                 <div className="absolute bottom-0 right-0 w-64 h-64 bg-emerald-300 rounded-full opacity-20"></div>
-                
+
                 {/* Plant illustration */}
                 <div className="relative z-10">
                   {/* Recycling symbol top-left */}
                   <div className="absolute top-0 left-0">
                     <svg className="w-16 h-16 text-emerald-300 opacity-60" viewBox="0 0 24 24" fill="currentColor">
-                      <path d="M21.82 15.42l-2.5-4.33c-.49-.85-1.39-1.42-2.41-1.42h-.77l1.39-2.4c.45-.78.18-1.77-.6-2.22-.77-.45-1.77-.18-2.21.6l-2.82 4.87h-2.09l-2.82-4.87c-.45-.78-1.44-1.05-2.21-.6-.78.45-1.05 1.44-.6 2.22l1.39 2.4h-.77c-1.02 0-1.92.57-2.41 1.42l-2.5 4.33c-.49.85-.49 1.9 0 2.75.49.85 1.39 1.42 2.41 1.42h2.09l-1.39 2.4c-.45.78-.18 1.77.6 2.21.26.15.54.22.81.22.55 0 1.09-.29 1.4-.82l2.82-4.87h2.09l2.82 4.87c.31.53.85.82 1.4.82.27 0 .55-.07.81-.22.78-.44 1.05-1.43.6-2.21l-1.39-2.4h2.09c1.02 0 1.92-.57 2.41-1.42.49-.85.49-1.9 0-2.75z"/>
+                      <path d="M21.82 15.42l-2.5-4.33c-.49-.85-1.39-1.42-2.41-1.42h-.77l1.39-2.4c.45-.78.18-1.77-.6-2.22-.77-.45-1.77-.18-2.21.6l-2.82 4.87h-2.09l-2.82-4.87c-.45-.78-1.44-1.05-2.21-.6-.78.45-1.05 1.44-.6 2.22l1.39 2.4h-.77c-1.02 0-1.92.57-2.41 1.42l-2.5 4.33c-.49.85-.49 1.9 0 2.75.49.85 1.39 1.42 2.41 1.42h2.09l-1.39 2.4c-.45.78-.18 1.77.6 2.21.26.15.54.22.81.22.55 0 1.09-.29 1.4-.82l2.82-4.87h2.09l2.82 4.87c.31.53.85.82 1.4.82.27 0 .55-.07.81-.22.78-.44 1.05-1.43.6-2.21l-1.39-2.4h2.09c1.02 0 1.92-.57 2.41-1.42.49-.85.49-1.9 0-2.75z" />
                     </svg>
                   </div>
-                  
+
                   {/* Main plant stem and leaves */}
                   <div className="flex justify-center items-end h-48 relative">
                     {/* Stem */}
@@ -140,13 +111,13 @@ const handleChange = (e) => {
                         <div className="w-16 h-12 bg-emerald-500 rounded-full transform -rotate-45 opacity-80"></div>
                         <div className="w-10 h-8 bg-emerald-600 rounded-full transform -rotate-45 absolute top-2 left-3"></div>
                       </div>
-                      
+
                       {/* Right leaf */}
                       <div className="absolute right-0 top-16 translate-x-8">
                         <div className="w-16 h-12 bg-emerald-500 rounded-full transform rotate-45 opacity-80"></div>
                         <div className="w-10 h-8 bg-emerald-600 rounded-full transform rotate-45 absolute top-2 right-3"></div>
                       </div>
-                      
+
                       {/* Top leaves */}
                       <div className="absolute -top-2 left-1/2 -translate-x-1/2">
                         <div className="w-12 h-16 bg-emerald-600 rounded-full transform -rotate-12"></div>
@@ -154,15 +125,15 @@ const handleChange = (e) => {
                       </div>
                     </div>
                   </div>
-                  
+
                   {/* Ground/soil */}
                   <div className="mt-0 h-8 bg-gradient-to-t from-emerald-400 to-emerald-300 rounded-full opacity-40"></div>
                 </div>
-                
+
                 {/* Recycling symbol bottom-right */}
                 <div className="absolute bottom-16 right-8">
                   <svg className="w-12 h-12 text-emerald-300 opacity-50" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M21.82 15.42l-2.5-4.33c-.49-.85-1.39-1.42-2.41-1.42h-.77l1.39-2.4c.45-.78.18-1.77-.6-2.22-.77-.45-1.77-.18-2.21.6l-2.82 4.87h-2.09l-2.82-4.87c-.45-.78-1.44-1.05-2.21-.6-.78.45-1.05 1.44-.6 2.22l1.39 2.4h-.77c-1.02 0-1.92.57-2.41 1.42l-2.5 4.33c-.49.85-.49 1.9 0 2.75.49.85 1.39 1.42 2.41 1.42h2.09l-1.39 2.4c-.45.78-.18 1.77.6 2.21.26.15.54.22.81.22.55 0 1.09-.29 1.4-.82l2.82-4.87h2.09l2.82 4.87c.31.53.85.82 1.4.82.27 0 .55-.07.81-.22.78-.44 1.05-1.43.6-2.21l-1.39-2.4h2.09c1.02 0 1.92-.57 2.41-1.42.49-.85.49-1.9 0-2.75z"/>
+                    <path d="M21.82 15.42l-2.5-4.33c-.49-.85-1.39-1.42-2.41-1.42h-.77l1.39-2.4c.45-.78.18-1.77-.6-2.22-.77-.45-1.77-.18-2.21.6l-2.82 4.87h-2.09l-2.82-4.87c-.45-.78-1.44-1.05-2.21-.6-.78.45-1.05 1.44-.6 2.22l1.39 2.4h-.77c-1.02 0-1.92.57-2.41 1.42l-2.5 4.33c-.49.85-.49 1.9 0 2.75.49.85 1.39 1.42 2.41 1.42h2.09l-1.39 2.4c-.45.78-.18 1.77.6 2.21.26.15.54.22.81.22.55 0 1.09-.29 1.4-.82l2.82-4.87h2.09l2.82 4.87c.31.53.85.82 1.4.82.27 0 .55-.07.81-.22.78-.44 1.05-1.43.6-2.21l-1.39-2.4h2.09c1.02 0 1.92-.57 2.41-1.42.49-.85.49-1.9 0-2.75z" />
                   </svg>
                 </div>
               </div>
@@ -186,159 +157,158 @@ const handleChange = (e) => {
               <p className="text-gray-500">Fill in your details to get started</p>
             </div>
 
-          <form onSubmit={handleSubmit} className="space-y-5"> 
-            <div className="space-y-5">
-              {/* Full Name */}
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
-                  Full Name
-                </label>
-                <div className="relative">
-                  <User className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-                  <input
-                    type="text"
-                    name="fullName"
-                    value={formData.fullName}
-                    onChange={handleChange}
-                    placeholder="Type your Name"
-                    className="w-full pl-12 pr-4 py-3 bg-gray-100 border-0 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:bg-white transition-all outline-none text-gray-900 placeholder-gray-400"
-                  />
+            <form onSubmit={handleSubmit} className="space-y-5">
+              <div className="space-y-5">
+                {/* Full Name */}
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    Full Name
+                  </label>
+                  <div className="relative">
+                    <User className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                    <input
+                      type="text"
+                      name="fullName"
+                      value={formData.fullName}
+                      onChange={handleChange}
+                      placeholder="Type your Name"
+                      className="w-full pl-12 pr-4 py-3 bg-gray-100 border-0 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:bg-white transition-all outline-none text-gray-900 placeholder-gray-400"
+                    />
+                  </div>
                 </div>
-              </div>
 
-              {/* Email */}
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
-                  Email Address
-                </label>
-                <div className="relative">
-                  <Mail className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-                  <input
-                    type="email"
-                    name="email"
-                    value={formData.email}
-                    onChange={handleChange}
-                    placeholder="Entrer your email"
-                    className="w-full pl-12 pr-4 py-3 bg-gray-100 border-0 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:bg-white transition-all outline-none text-gray-900 placeholder-gray-400"
-                  />
+                {/* Email */}
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    Email Address
+                  </label>
+                  <div className="relative">
+                    <Mail className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                    <input
+                      type="email"
+                      name="email"
+                      value={formData.email}
+                      onChange={handleChange}
+                      placeholder="Entrer your email"
+                      className="w-full pl-12 pr-4 py-3 bg-gray-100 border-0 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:bg-white transition-all outline-none text-gray-900 placeholder-gray-400"
+                    />
+                  </div>
                 </div>
-              </div>
 
-              {/* Phone */}
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
-                  Phone Number
-                </label>
-                <div className="relative">
-                  <Phone className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-                  <input
-                    type="tel"
-                    name="phone"
-                    value={formData.phone}
-                    onChange={handleChange}
-                    placeholder="Type your Phone Number"
-                    className="w-full pl-12 pr-4 py-3 bg-gray-100 border-0 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:bg-white transition-all outline-none text-gray-900 placeholder-gray-400"
-                  />
+                {/* Phone */}
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    Phone Number
+                  </label>
+                  <div className="relative">
+                    <Phone className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                    <input
+                      type="tel"
+                      name="phone"
+                      value={formData.phone}
+                      onChange={handleChange}
+                      placeholder="Type your Phone Number"
+                      className="w-full pl-12 pr-4 py-3 bg-gray-100 border-0 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:bg-white transition-all outline-none text-gray-900 placeholder-gray-400"
+                    />
+                  </div>
                 </div>
-              </div>
 
-              {/* Address */}
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
-                  Address
-                </label>
-                <div className="relative">
-                  <MapPin className="absolute left-4 top-4 text-gray-400 w-5 h-5" />
-                  <textarea
-                    name="address"
-                    value={formData.address}
-                    onChange={handleChange}
-                    placeholder="Please Enter your Complete Address"
-                    rows="3"
-                    className="w-full pl-12 pr-4 py-3 bg-gray-100 border-0 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:bg-white transition-all outline-none text-gray-900 placeholder-gray-400 resize-none"
-                  ></textarea>
+                {/* Address */}
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    Address
+                  </label>
+                  <div className="relative">
+                    <MapPin className="absolute left-4 top-4 text-gray-400 w-5 h-5" />
+                    <textarea
+                      name="address"
+                      value={formData.address}
+                      onChange={handleChange}
+                      placeholder="Please Enter your Complete Address"
+                      rows="3"
+                      className="w-full pl-12 pr-4 py-3 bg-gray-100 border-0 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:bg-white transition-all outline-none text-gray-900 placeholder-gray-400 resize-none"
+                    ></textarea>
+                  </div>
                 </div>
-              </div>
 
-              {/* Role */}
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
-                  I am a
-                </label>
-                <div className="relative">
-                  <User className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5 pointer-events-none" />
-                  <select
-                    name="role"
-                    value={formData.role}
-                    onChange={handleChange}
-                    className="w-full pl-12 pr-10 py-3 bg-gray-100 border-2 border-emerald-500 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:bg-white transition-all outline-none text-gray-900 appearance-none cursor-pointer"
-                  >
-                    <option value="">Select your role</option>
-                    <option value="user">User</option>
-                    <option value="driver">Driver</option>
-                   
-                  </select>
-                  <svg
-                    className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5 pointer-events-none"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                  </svg>
+                {/* Role */}
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    I am a
+                  </label>
+                  <div className="relative">
+                    <User className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5 pointer-events-none" />
+                    <select
+                      name="role"
+                      value={formData.role}
+                      onChange={handleChange}
+                      className="w-full pl-12 pr-10 py-3 bg-gray-100 border-2 border-emerald-500 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:bg-white transition-all outline-none text-gray-900 appearance-none cursor-pointer"
+                    >
+                      <option value="">Select your role</option>
+                      <option value="user">User</option>
+                      <option value="driver">Driver</option>
+
+                    </select>
+                    <svg
+                      className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5 pointer-events-none"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </div>
                 </div>
-              </div>
 
-              {/* Password */}
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
-                  Password
-                </label>
-                <div className="relative">
-                  <Lock className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-                  <input
-                    type="password"
-                    name="password"
-                    value={formData.password}
-                    onChange={handleChange}
-                    placeholder=""
-                    className="w-full pl-12 pr-4 py-3 bg-gray-100 border-0 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:bg-white transition-all outline-none text-gray-900 placeholder-gray-400"
-                  />
+                {/* Password */}
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    Password
+                  </label>
+                  <div className="relative">
+                    <Lock className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                    <input
+                      type="password"
+                      name="password"
+                      value={formData.password}
+                      onChange={handleChange}
+                      placeholder=""
+                      className="w-full pl-12 pr-4 py-3 bg-gray-100 border-0 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:bg-white transition-all outline-none text-gray-900 placeholder-gray-400"
+                    />
+                  </div>
                 </div>
-              </div>
 
-              {/* Submit Button */}
-              <button
-                type='submit'
-                className="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-semibold py-3 px-6 rounded-xl transition-colors duration-200 shadow-lg hover:shadow-xl mt-6">
+                {/* Submit Button */}
+                <button
+                  type='submit'
+                  className="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-semibold py-3 px-6 rounded-xl transition-colors duration-200 shadow-lg hover:shadow-xl mt-6">
                   Create Account
-              </button>
-            </div>
+                </button>
+              </div>
             </form>
             {/* Message Display */}
             {message && (
-             <div className={`text-center text-sm mt-4 p-3 rounded-lg ${
-               message.includes('successfully') 
-                 ? 'bg-green-100 text-green-700' 
-                 : 'bg-red-100 text-red-700'
-             }`}>
-               {message}
-             </div>
-           )}
-              {/* Sign In Link */}
-              <p className="text-center text-gray-600 text-sm mt-4">
-                Already have an account?{' '}
-                <Link to="/login"> 
+              <div className={`text-center text-sm mt-4 p-3 rounded-lg ${message.includes('successfully')
+                ? 'bg-green-100 text-green-700'
+                : 'bg-red-100 text-red-700'
+                }`}>
+                {message}
+              </div>
+            )}
+            {/* Sign In Link */}
+            <p className="text-center text-gray-600 text-sm mt-4">
+              Already have an account?{' '}
+              <Link to="/login">
                 <span className="text-emerald-500 hover:text-emerald-600 font-semibold cursor-pointer">
                   Log In
                 </span>
-                </Link>
-                
-              </p>
-            </div>
+              </Link>
+
+            </p>
           </div>
-        </div>
-      </div>
+        </div >
+      </div >
+    </div >
   );
 }
 
