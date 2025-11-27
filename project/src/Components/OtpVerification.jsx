@@ -48,6 +48,17 @@ const OtpVerificationContent = () => {
   const inputRefs = useRef([]);
   const { email, role } = location.state || {};
 
+  // --- FIXED: Robust Timer Logic ---
+  // Runs once on mount. The interval stays alive and checks state safely.
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setTimer((prev) => (prev > 0 ? prev - 1 : 0));
+    }, 1000);
+
+    // Cleanup on unmount
+    return () => clearInterval(interval);
+  }, []);
+
   const handleChange = (index, value) => {
     if (isNaN(value)) return;
     const newOtp = [...otp];
@@ -87,34 +98,52 @@ const OtpVerificationContent = () => {
       const response = await fetch(getApiUrl('verify_otp'), {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json', // <--- THIS WAS MISSING
+          'Content-Type': 'application/json', // Ensure headers are correct
         },
         body: JSON.stringify({ email, otp: code, role })
       });
 
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      setSuccess('Verified successfully!');
+      const data = await response.json();
 
-      setTimeout(() => {
-        if (role === 'admin') {
-          navigate('/dashboard'); // Admin Dashboard
-        } else {
-          navigate('/'); // Client/User Home or Dashboard
-        }
-      }, 1000);
+      if (response.ok) {
+        setSuccess('Verified successfully!');
+        await new Promise(resolve => setTimeout(resolve, 1500));
+        navigate('/login');
+      } else {
+        setError(data.message || 'Invalid OTP. Please try again.');
+      }
     } catch (err) {
-      setError('Invalid OTP. Please try again.');
+      setError('Network Error. Please try again.');
     } finally {
       setIsLoading(false);
     }
   };
 
-  const handleResend = () => {
-    if (timer === 0) {
-      setTimer(30);
-      setError('');
-      setSuccess('New code sent!');
-      // Trigger backend resend API here using `email` variable
+  const handleResend = async () => {
+    if (timer !== 0) return;
+    setTimer(30); // This will instantly restart the countdown
+    setError('');
+    setSuccess('');
+    
+    try {
+      const response = await fetch(getApiUrl('resend_otp'), {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, role })
+      });
+      
+      const data = await response.json();
+
+      if (response.ok) {
+        setSuccess('New code sent to your email!');
+      } else {
+        setError(data.message || 'Failed to resend OTP.');
+      }
+    } catch (err) {
+      console.error("Resend Error:", err);
+      setError('Network error. Could not resend.');
     }
   };
 
@@ -167,7 +196,7 @@ const OtpVerificationContent = () => {
             <p className="text-gray-600 text-sm font-medium">
               We've sent a secure code to <br />
               {/* --- DYNAMIC EMAIL DISPLAY --- */}
-              <span className="text-emerald-600 font-bold bg-emerald-50 px-2 py-0.5 rounded-md">{email}</span>
+              <span className="text-emerald-600 font-bold bg-emerald-50 px-2 py-0.5 rounded-md">{email || 'your email'}</span>
             </p>
           </div>
 
