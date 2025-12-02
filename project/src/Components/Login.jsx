@@ -79,8 +79,7 @@ export const Login = () => {
         localStorage.setItem('client_token', tokenToStore); 
         
         setTimeout(() => {
-          // Redirect to client dashboard
-          navigate('/dashboard'); 
+          window.location.href = '/dashboard'; 
         }, 1500);
       } else {
         setMessage(data.message || 'Login failed');
